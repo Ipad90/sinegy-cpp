@@ -302,7 +302,7 @@ Json::Value Marketplace::get_trades(std::string pair, int page, int limit, int s
     return this->curl_api("GET", url, std::vector<std::pair<std::string, std::string>>());
 }
 
-Json::Value Marketplace::place_order(std::string pair, std::string price, std::string volume, int side, int order_type, int time_inforce, int recv_window)
+Json::Value Marketplace::place_order(std::string pair, std::string price, std::string volume, std::string side, std::string order_type, int recv_window)
 {
     std::string result;
     std::string url = "/api/v1/account/orders/place";
@@ -311,9 +311,8 @@ Json::Value Marketplace::place_order(std::string pair, std::string price, std::s
         {"currencyPair", pair},
         {"unitPrice", price},
         {"volume", volume},
-        {"orderSideId", std::to_string(side)},
-        {"orderTypeId", std::to_string(order_type)},
-        {"timeInForce", std::to_string(time_inforce)},
+        {"orderSide", side},
+        {"orderType", order_type},
         {"recvWindow", std::to_string(recv_window)}
     };
     parameters.push_back(make_pair("signature", this->signature("POST", url, parameters)));
@@ -321,7 +320,7 @@ Json::Value Marketplace::place_order(std::string pair, std::string price, std::s
     return this->curl_api("POST", url, parameters);
 }
 
-Json::Value Marketplace::place_test_order(std::string pair, std::string price, std::string volume, int side, int order_type, int time_inforce, int recv_window)
+Json::Value Marketplace::place_test_order(std::string pair, std::string price, std::string volume, std::string side, std::string order_type, int recv_window)
 {
     std::string result;
     std::string url = "/api/v1/account/orders/test";
@@ -330,9 +329,8 @@ Json::Value Marketplace::place_test_order(std::string pair, std::string price, s
         {"currencyPair", pair},
         {"unitPrice", price},
         {"volume", volume},
-        {"orderSideId", std::to_string(side)},
-        {"orderTypeId", std::to_string(order_type)},
-        {"timeInForce", std::to_string(time_inforce)},
+        {"orderSide", side},
+        {"orderType", order_type},
         {"recvWindow", std::to_string(recv_window)}
     };
     parameters.push_back(make_pair("signature", this->signature("POST", url, parameters)));

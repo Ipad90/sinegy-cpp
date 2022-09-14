@@ -59,8 +59,8 @@ class Marketplace
         Json::Value get_filled_orders(std::string pair, int page = 1, int limit = 250, int start_time = 0, int end_time = 0, int recv_window = 5000);
         Json::Value get_trades(std::string pair, int page = 1, int limit = 250, int start_time = 0, int end_time = 0, int recv_window = 5000);
 
-        Json::Value place_order(std::string pair, std::string price, std::string volume, int side, int order_type, int time_inforce = 1, int recv_window = 5000);
-        Json::Value place_test_order(std::string pair, std::string price, std::string volume, int side, int order_type, int time_inforce = 1, int recv_window = 5000);
+        Json::Value place_order(std::string pair, std::string price, std::string volume, std::string side, std::string order_type, int recv_window = 5000);
+        Json::Value place_test_order(std::string pair, std::string price, std::string volume, std::string side, std::string order_type, int recv_window = 5000);
         Json::Value cancel_order(std::string pair, std::string order_id, int recv_window = 5000);
 
         ~Marketplace();
