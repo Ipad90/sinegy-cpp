@@ -1,19 +1,21 @@
-#ifndef BASE_64_HPP
-#define BASE_64_HPP
+#pragma once
 
 #include <algorithm>
 #include <string>
 
-namespace base64 {
-
-    inline std::string get_base64_chars() {
+namespace base64 
+{
+    inline std::string get_base64_chars()
+    {
         static std::string base64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
             "abcdefghijklmnopqrstuvwxyz"
             "0123456789+/";
+
         return base64_chars;
     }
 
-    inline std::string to_base64(std::string const& data) {
+    inline std::string to_base64(std::string const& data)
+    {
         int counter = 0;
         uint32_t bit_stream = 0;
         const std::string base64_chars = get_base64_chars();
@@ -47,7 +49,8 @@ namespace base64 {
         return encoded;
     }
 
-    inline std::string from_base64(std::string const& data) {
+    inline std::string from_base64(std::string const& data)
+    {
         int counter = 0;
         uint32_t bit_stream = 0;
         std::string decoded;
@@ -76,7 +79,4 @@ namespace base64 {
         }
         return decoded;
     }
-
 }
-
-#endif // BASE_64_HPP

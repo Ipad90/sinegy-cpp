@@ -1,490 +1,447 @@
 ﻿#include "marketplace.hpp"
 
-string Marketplace::api_key = "";
-string Marketplace::secret_key = "";
-CURL* Marketplace::curl = NULL;
-
-void Marketplace::init(string &api_key, string &secret_key)
+Marketplace::Marketplace(std::string api_key, std::string secret_key)
 {
-	curl_global_init(CURL_GLOBAL_DEFAULT);
-	Marketplace::api_key = api_key;
-	Marketplace::secret_key = secret_key;
-	Marketplace::curl = curl_easy_init();
-}
-
-void Marketplace::cleanup()
-{
-	curl_easy_cleanup(Marketplace::curl);
-	curl_global_cleanup();
+    this->api_key = api_key;
+    this->secret_key = secret_key;
+    this->curl = curl_easy_init();
 }
 
 Json::Value Marketplace::get_currency()
 {
-	return Marketplace::curl_api("GET", "/api/v1/general/currency", vector<std::pair<string, string>>());
-}
-
-Json::Value Marketplace::get_countries(int page, int limit)
-{
-	string url = "/api/v1/general/countries?";
-	vector<std::pair<string, string>> path = {
-		{"page", to_string(page)},
-		{"limit", to_string(limit)}
-	};
-	url = Marketplace::build_query(path, url);
-	return Marketplace::curl_api("GET", url, vector<std::pair<string, string>>());
-}
-
-Json::Value Marketplace::get_states(string country_code, int page, int limit)
-{
-	string url = "/api/v1/general/states?";
-	vector<std::pair<string, string>> path = {
-		{"countryCode", country_code},
-		{"page", to_string(page)},
-		{"limit", to_string(limit)},
-	};
-	url = Marketplace::build_query(path, url);
-	return Marketplace::curl_api("GET", url, vector<std::pair<string, string>>());
+    return this->curl_api("GET", "/api/v1/general/currency", std::vector<std::pair<std::string, std::string>>());
 }
 
 Json::Value Marketplace::get_currency_pairs()
 {
-	return Marketplace::curl_api("GET", "/api/v1/general/currency-pair", vector<std::pair<string, string>>());
-}
-
-Json::Value Marketplace::get_sinegy_company_bank_accounts()
-{
-	return Marketplace::curl_api("GET", "/api/v1/general/sinegy/funding-account", vector<std::pair<string, string>>());
+    return this->curl_api("GET", "/api/v1/general/currency-pair", std::vector<std::pair<std::string, std::string>>());
 }
 
 Json::Value Marketplace::get_server_time()
 {
-	return Marketplace::curl_api("GET", "/api/v1/server/time", vector<std::pair<string, string>>());
+    return this->curl_api("GET", "/api/v1/server/time", std::vector<std::pair<std::string, std::string>>());
 }
 
 Json::Value Marketplace::get_server_status()
 {
-	return Marketplace::curl_api("GET", "/api/v1/server/status", vector<std::pair<string, string>>());
+    return this->curl_api("GET", "/api/v1/server/status", std::vector<std::pair<std::string, std::string>>());
 }
 
-Json::Value Marketplace::ticker(string pair)
+Json::Value Marketplace::ticker(std::string pair)
 {
-	string url = "/api/v1/market/spot/chart/ticker/24hr?";
-	vector<std::pair<string, string>> path = {
-		{"currencyPair", pair}
-	};
-	url = Marketplace::build_query(path, url);
-	return Marketplace::curl_api("GET", url, vector<std::pair<string, string>>());
+    std::string url = "/api/v1/market/spot/chart/ticker/24hr?";
+
+    std::vector<std::pair<std::string, std::string>> path = {
+        {"currencyPair", pair}
+    };
+
+    url = this->build_query(path, url);
+
+    return this->curl_api("GET", url, std::vector<std::pair<std::string, std::string>>());
 }
 
-Json::Value Marketplace::get_orderbook(string pair)
+Json::Value Marketplace::get_orderbook(std::string pair)
 {
-	string url = "/api/v1/market/spot/orderbook?";
-	vector<std::pair<string, string>> path = {
-		{"currencyPair", pair}
-	};
-	url = Marketplace::build_query(path, url);
-	return Marketplace::curl_api("GET", url, vector<std::pair<string, string>>());
+    std::string url = "/api/v1/market/spot/orderbook?";
+
+    std::vector<std::pair<std::string, std::string>> path = {
+        {"currencyPair", pair}
+    };
+    
+    url = this->build_query(path, url);
+
+    return this->curl_api("GET", url, std::vector<std::pair<std::string, std::string>>());
 }
 
-Json::Value Marketplace::get_recent_trades(string pair, int page, int limit)
+Json::Value Marketplace::get_recent_trades(std::string pair, int page, int limit)
 {
-	string url = "/api/v1/market/spot/trades?";
-	vector<std::pair<string, string>> path = {
-		{"currencyPair", pair},
-		{"page", to_string(page)},
-		{"limit", to_string(limit)},
-	};
-	url = Marketplace::build_query(path, url);
-	return Marketplace::curl_api("GET", url, vector<std::pair<string, string>>());
+    std::string url = "/api/v1/market/spot/trades?";
+
+    std::vector<std::pair<std::string, std::string>> path = {
+        {"currencyPair", pair},
+        {"page", std::to_string(page)},
+        {"limit", std::to_string(limit)},
+    };
+
+    url = this->build_query(path, url);
+
+    return this->curl_api("GET", url, std::vector<std::pair<std::string, std::string>>());
 }
 
-Json::Value Marketplace::get_chart_data(string pair, int to_ts, string reso)
+Json::Value Marketplace::get_chart_data(std::string pair, int to_ts, std::string reso)
 {
-	string url = "/api/v1/market/spot/chart/klines?";
-	vector<std::pair<string, string>> path = {
-		{"currencyPair", pair},
-		{"reso", reso},
-		{"to_ts", to_string(to_ts)}
-	};
-	url = Marketplace::build_query(path, url);
-	return Marketplace::curl_api("GET", url, vector<std::pair<string, string>>());
+    std::string url = "/api/v1/market/spot/chart/klines?";
+
+    std::vector<std::pair<std::string, std::string>> path = {
+        {"currencyPair", pair},
+        {"reso", reso},
+        {"to_ts", std::to_string(to_ts)}
+    };
+
+    url = this->build_query(path, url);
+
+    return this->curl_api("GET", url, std::vector<std::pair<std::string, std::string>>());
 }
 
-Json::Value Marketplace::get_funding_fees(string currency)
+Json::Value Marketplace::get_funding_fees(std::string currency)
 {
-	string url = "/api/v1/general/fuding/fees?";
-	vector<std::pair<string, string>> path = {
-		{"currency", currency}
-	};
-	url = Marketplace::build_query(path, url);
-	return Marketplace::curl_api("GET", url, vector<std::pair<string, string>>());
-}
+    std::string url = "/api/v1/general/fuding/fees?";
 
-Json::Value Marketplace::get_funding_status()
-{
-	return Marketplace::curl_api("GET", "/api/v1/general/fuding/status", vector<std::pair<string, string>>());
-}
+    std::vector<std::pair<std::string, std::string>> path = {
+        {"currency", currency}
+    };
 
-Json::Value Marketplace::get_funding_types()
-{
-	return Marketplace::curl_api("GET", "/api/v1/general/funding/types", vector<std::pair<string, string>>());
-}
+    url = this->build_query(path, url);
 
-Json::Value Marketplace::get_funding_transfer_types()
-{
-	return Marketplace::curl_api("GET", "/api/v1/general/funding/transfer-types", vector<std::pair<string, string>>());
-}
-
-Json::Value Marketplace::get_funding_payment_types()
-{
-	return Marketplace::curl_api("GET", "/api/v1/general/funding/payment-types", vector<std::pair<string, string>>());
+    return this->curl_api("GET", url, std::vector<std::pair<std::string, std::string>>());
 }
 
 Json::Value Marketplace::get_account_information(int recv_window)
 {
-	string url = "/api/v1/account/user?";
-	vector<std::pair<string, string>> path = {
-		{"recvWindow", to_string(recv_window)}
-	};
-	path.push_back(make_pair("signature", Marketplace::signature("GET", "/api/v1/account", path)));
-	url = Marketplace::build_query(path, url);
-	return Marketplace::curl_api("GET", url, vector<std::pair<string, string>>());
+    std::string url = "/api/v1/account/user?";
+
+    std::vector<std::pair<std::string, std::string>> path = {
+        {"recvWindow", std::to_string(recv_window)}
+    };
+
+    path.push_back(make_pair("signature", this->signature("GET", "/api/v1/account", path)));
+    url = this->build_query(path, url);
+
+    return this->curl_api("GET", url, std::vector<std::pair<std::string, std::string>>());
 }
 
-Json::Value Marketplace::get_account_balance(string currency, int recv_window)
+Json::Value Marketplace::get_account_balance(std::string currency, int recv_window)
 {
-	string url = "/api/v1/account/balance?";
-	vector<std::pair<string, string>> path = {
-		{"recvWindow", to_string(recv_window)}
-	};
-	if (currency != "") {
-		path.push_back(make_pair("currency", currency));
-	}
-	path.push_back(make_pair("signature", Marketplace::signature("GET", "/api/v1/account/balance", path)));
-	url = Marketplace::build_query(path, url);
-	return Marketplace::curl_api("GET", url, vector<std::pair<string, string>>());
+    std::string url = "/api/v1/account/balance?";
+
+    std::vector<std::pair<std::string, std::string>> path = {
+        {"recvWindow", std::to_string(recv_window)}
+    };
+
+    if (currency != "") {
+        path.push_back(make_pair("currency", currency));
+    }
+
+    path.push_back(make_pair("signature", this->signature("GET", "/api/v1/account/balance", path)));
+    url = this->build_query(path, url);
+
+    return this->curl_api("GET", url, std::vector<std::pair<std::string, std::string>>());
 }
 
-Json::Value Marketplace::get_deposits(string currency, int page, int limit, int start_time, int end_time, int recv_window)
+Json::Value Marketplace::get_deposits(std::string currency, int page, int limit, int start_time, int end_time, int recv_window)
 {
-	string url = "/api/v1/account/transaction?";
-	vector<std::pair<string, string>> path = {
-		{"currency", currency},
-		{"page", to_string(page)},
-		{"limit", to_string(limit)},
-		{"recvWindow", to_string(recv_window)}
-	};
-	if (start_time > 0) {
-		path.push_back(make_pair("start_time", to_string(start_time)));
-	}
-	if (end_time > 0) {
-		path.push_back(make_pair("end_time", to_string(end_time)));
-	};
-	path.push_back(make_pair("signature", Marketplace::signature("GET", "/api/v1/account/transaction", path)));
-	url = Marketplace::build_query(path, url);
-	return Marketplace::curl_api("GET", url, vector<std::pair<string, string>>());
+    std::string url = "/api/v1/account/transaction?";
+
+    std::vector<std::pair<std::string, std::string>> path = {
+        {"currency", currency},
+        {"page", std::to_string(page)},
+        {"limit", std::to_string(limit)},
+        {"recvWindow", std::to_string(recv_window)}
+    };
+
+    if (start_time > 0) {
+        path.push_back(make_pair("start_time", std::to_string(start_time)));
+    }
+
+    if (end_time > 0) {
+        path.push_back(make_pair("end_time", std::to_string(end_time)));
+    }
+
+    path.push_back(make_pair("signature", this->signature("GET", "/api/v1/account/transaction", path)));
+    url = this->build_query(path, url);
+
+    return this->curl_api("GET", url, std::vector<std::pair<std::string, std::string>>());
 }
 
-Json::Value Marketplace::get_withdrawals(string currency, int page, int limit, int start_time, int end_time, int recv_window)
+Json::Value Marketplace::get_withdrawals(std::string currency, int page, int limit, int start_time, int end_time, int recv_window)
 {
-	string url = "/api/v1/account/transaction?";
-	vector<std::pair<string, string>> path = {
-		{"currency", currency},
-		{"page", to_string(page)},
-		{"limit", to_string(limit)},
-		{"recvWindow", to_string(recv_window)}
-	};
-	if (start_time > 0) {
-		path.push_back(make_pair("start_time", to_string(start_time)));
-	}
-	if (end_time > 0) {
-		path.push_back(make_pair("end_time", to_string(end_time)));
-	};
-	path.push_back(make_pair("signature", Marketplace::signature("GET", "/api/v1/account/transaction", path)));
-	url = Marketplace::build_query(path, url);
-	return Marketplace::curl_api("GET", url, vector<std::pair<string, string>>());
+    std::string url = "/api/v1/account/transaction?";
+    std::vector<std::pair<std::string, std::string>> path = {
+        {"currency", currency},
+        {"page", std::to_string(page)},
+        {"limit", std::to_string(limit)},
+        {"recvWindow", std::to_string(recv_window)}
+    };
+
+    if (start_time > 0) {
+        path.push_back(make_pair("start_time", std::to_string(start_time)));
+    }
+
+    if (end_time > 0) {
+        path.push_back(make_pair("end_time", std::to_string(end_time)));
+    }
+
+    path.push_back(make_pair("signature", this->signature("GET", "/api/v1/account/transaction", path)));
+    url = this->build_query(path, url);
+
+    return this->curl_api("GET", url, std::vector<std::pair<std::string, std::string>>());
 }
 
-Json::Value Marketplace::get_transactions(string currency, int page, int limit, int start_time, int end_time, int recv_window)
+Json::Value Marketplace::get_transactions(std::string currency, int page, int limit, int start_time, int end_time, int recv_window)
 {
-	string url = "/api/v1/account/transaction?";
-	vector<std::pair<string, string>> path = {
-		{"currency", currency},
-		{"page", to_string(page)},
-		{"limit", to_string(limit)},
-		{"recvWindow", to_string(recv_window)}
-	};
-	if (start_time > 0) {
-		path.push_back(make_pair("start_time", to_string(start_time)));
-	}
-	if (end_time > 0) {
-		path.push_back(make_pair("end_time", to_string(end_time)));
-	};
-	path.push_back(make_pair("signature", Marketplace::signature("GET", "/api/v1/account/transaction", path)));
-	url = Marketplace::build_query(path, url);
-	return Marketplace::curl_api("GET", url, vector<std::pair<string, string>>());
+    std::string url = "/api/v1/account/transaction?";
+
+    std::vector<std::pair<std::string, std::string>> path = {
+        {"currency", currency},
+        {"page", std::to_string(page)},
+        {"limit", std::to_string(limit)},
+        {"recvWindow", std::to_string(recv_window)}
+    };
+
+    if (start_time > 0) {
+        path.push_back(make_pair("start_time", std::to_string(start_time)));
+    }
+
+    if (end_time > 0) {
+        path.push_back(make_pair("end_time", std::to_string(end_time)));
+    }
+
+    path.push_back(make_pair("signature", this->signature("GET", "/api/v1/account/transaction", path)));
+    url = this->build_query(path, url);
+
+    return this->curl_api("GET", url, std::vector<std::pair<std::string, std::string>>());
 }
 
-Json::Value Marketplace::get_trade_fees(string pair)
+Json::Value Marketplace::get_trade_fees(std::string pair)
 {
-	string url = "/api/v1/general/trade/fees?";
-	vector<std::pair<string, string>> path = {
-		{"currencyPair", pair}
-	};
-	url = Marketplace::build_query(path, url);
-	return Marketplace::curl_api("GET", url, vector<std::pair<string, string>>());
+    std::string url = "/api/v1/general/trade/fees?";
+
+    std::vector<std::pair<std::string, std::string>> path = {
+        {"currencyPair", pair}
+    };
+
+    url = this->build_query(path, url);
+
+    return this->curl_api("GET", url, std::vector<std::pair<std::string, std::string>>());
 }
 
-Json::Value Marketplace::get_order_message_types(string pair)
+Json::Value Marketplace::get_specific_order(std::string pair, std::string transaction_no, int recv_window)
 {
-	string url = "/api/v1/general/order/message-types?";
-	vector<std::pair<string, string>> path = {
-		{"currencyPair", pair}
-	};
-	url = Marketplace::build_query(path, url);
-	return Marketplace::curl_api("GET", url, vector<std::pair<string, string>>());
+    std::string result;
+    std::string url = "/api/v1/account/orders/check?";
+
+    std::vector<std::pair<std::string, std::string>> path = {
+        {"currencyPair", pair},
+        {"transactionNo", transaction_no},
+        {"recvWindow", std::to_string(recv_window)}
+    };
+
+    path.push_back(make_pair("signature", this->signature("GET", "/api/v1/account/orders/check", path)));
+    url = this->build_query(path, url);
+
+    return this->curl_api("GET", url, std::vector<std::pair<std::string, std::string>>());
 }
 
-Json::Value Marketplace::get_order_status(string pair)
+Json::Value Marketplace::get_active_orders(std::string pair, int page, int limit, int recv_window)
 {
-	string url = "/api/v1/general/order/status?";
-	vector<std::pair<string, string>> path = {
-		{"currencyPair", pair}
-	};
-	url = Marketplace::build_query(path, url);
-	return Marketplace::curl_api("GET", url, vector<std::pair<string, string>>());
+    std::string result;
+    std::string url = "/api/v1/account/orders?";
+
+    std::vector<std::pair<std::string, std::string>> path = {
+        {"currencyPair", pair},
+        {"page", std::to_string(page)},
+        {"limit", std::to_string(limit)},
+        {"recvWindow", std::to_string(recv_window)}
+    };
+
+    path.push_back(make_pair("signature", this->signature("GET", "/api/v1/account/orders", path)));
+    url = this->build_query(path, url);
+
+    return this->curl_api("GET", url, std::vector<std::pair<std::string, std::string>>());
 }
 
-Json::Value Marketplace::get_order_types(string pair)
+Json::Value Marketplace::get_filled_orders(std::string pair, int page, int limit, int start_time, int end_time, int recv_window)
 {
-	string url = "/api/v1/general/order/types?";
-	vector<std::pair<string, string>> path = {
-		{"currencyPair", pair}
-	};
-	url = Marketplace::build_query(path, url);
-	return Marketplace::curl_api("GET", url, vector<std::pair<string, string>>());
+    std::string result;
+    std::string url = "/api/v1/account/orders/history?";
+
+    std::vector<std::pair<std::string, std::string>> path = {
+        {"currencyPair", pair},
+        {"page", std::to_string(page)},
+        {"limit", std::to_string(limit)},
+        {"recvWindow", std::to_string(recv_window)}
+    };
+
+    if (start_time > 0) {
+        path.push_back(make_pair("start_time", std::to_string(start_time)));
+    }
+
+    if (end_time > 0) {
+        path.push_back(make_pair("end_time", std::to_string(end_time)));
+    }
+
+    path.push_back(make_pair("signature", this->signature("GET", "/api/v1/account/orders/history", path)));
+    url = this->build_query(path, url);
+
+    return this->curl_api("GET", url, std::vector<std::pair<std::string, std::string>>());
 }
 
-Json::Value Marketplace::get_order_time_inforce(string pair)
+Json::Value Marketplace::get_trades(std::string pair, int page, int limit, int start_time, int end_time, int recv_window)
 {
-	string url = "/api/v1/general/order/time-inforce?";
-	vector<std::pair<string, string>> path = {
-		{"currencyPair", pair}
-	};
-	url = Marketplace::build_query(path, url);
-	return Marketplace::curl_api("GET", url, vector<std::pair<string, string>>());
+    std::string result;
+    std::string url = "/api/v1/account/orders?";
+
+    std::vector<std::pair<std::string, std::string>> path = {
+        {"currencyPair", pair},
+        {"page", std::to_string(page)},
+        {"limit", std::to_string(limit)},
+        {"recvWindow", std::to_string(recv_window)}
+    };
+
+    if (start_time > 0) {
+        path.push_back(make_pair("start_time", std::to_string(start_time)));
+    }
+
+    if (end_time > 0) {
+        path.push_back(make_pair("end_time", std::to_string(end_time)));
+    }
+
+    path.push_back(make_pair("signature", this->signature("GET", "/api/v1/account/orders", path)));
+    url = this->build_query(path, url);
+
+    return this->curl_api("GET", url, std::vector<std::pair<std::string, std::string>>());
 }
 
-Json::Value Marketplace::get_order_sides(string pair)
+Json::Value Marketplace::place_order(std::string pair, std::string price, std::string volume, int side, int order_type, int time_inforce, int recv_window)
 {
-	string url = "/api/v1/general/order/sides?";
-	vector<std::pair<string, string>> path = {
-		{"currencyPair", pair}
-	};
-	url = Marketplace::build_query(path, url);
-	return Marketplace::curl_api("GET", url, vector<std::pair<string, string>>());
+    std::string result;
+    std::string url = "/api/v1/account/orders/place";
+
+    std::vector<std::pair<std::string, std::string>> parameters = {
+        {"currencyPair", pair},
+        {"unitPrice", price},
+        {"volume", volume},
+        {"orderSideId", std::to_string(side)},
+        {"orderTypeId", std::to_string(order_type)},
+        {"timeInForce", std::to_string(time_inforce)},
+        {"recvWindow", std::to_string(recv_window)}
+    };
+    parameters.push_back(make_pair("signature", this->signature("POST", url, parameters)));
+
+    return this->curl_api("POST", url, parameters);
 }
 
-Json::Value Marketplace::get_order_flags(string pair)
+Json::Value Marketplace::place_test_order(std::string pair, std::string price, std::string volume, int side, int order_type, int time_inforce, int recv_window)
 {
-	string url = "/api/v1/general/order/flags?";
-	vector<std::pair<string, string>> path = {
-		{"currencyPair", pair}
-	};
-	url = Marketplace::build_query(path, url);
-	return Marketplace::curl_api("GET", url, vector<std::pair<string, string>>());
+    std::string result;
+    std::string url = "/api/v1/account/orders/test";
+
+    std::vector<std::pair<std::string, std::string>> parameters = {
+        {"currencyPair", pair},
+        {"unitPrice", price},
+        {"volume", volume},
+        {"orderSideId", std::to_string(side)},
+        {"orderTypeId", std::to_string(order_type)},
+        {"timeInForce", std::to_string(time_inforce)},
+        {"recvWindow", std::to_string(recv_window)}
+    };
+    parameters.push_back(make_pair("signature", this->signature("POST", url, parameters)));
+
+    return this->curl_api("POST", url, parameters);
 }
 
-Json::Value Marketplace::get_specific_order(string pair, string transaction_no, int recv_window)
+Json::Value Marketplace::cancel_order(std::string pair, std::string order_id, int recv_window)
 {
-	string result;
-	string url = "/api/v1/account/orders/check?";
-	vector<std::pair<string, string>> path = {
-		{"currencyPair", pair},
-		{"transactionNo", transaction_no},
-		{"recvWindow", to_string(recv_window)}
-	};
-	path.push_back(make_pair("signature", Marketplace::signature("GET", "/api/v1/account/orders/check", path)));
-	url = Marketplace::build_query(path, url);
-	return Marketplace::curl_api("GET", url, vector<std::pair<string, string>>());
+    std::string result;
+    std::string url = "/api/v1/account/orders/cancel";
+
+    std::vector<std::pair<std::string, std::string>> parameters = {
+        {"currencyPair", pair},
+        {"orderId", order_id},
+        {"recvWindow", std::to_string(recv_window)}
+    };
+    parameters.push_back(make_pair("signature", this->signature("DELETE", url, parameters)));
+
+    return this->curl_api("DELETE", url, parameters);
 }
 
-Json::Value Marketplace::get_active_orders(string pair, int page, int limit, int recv_window)
+std::chrono::milliseconds Marketplace::timestamp()
 {
-	string result;
-	string url = "/api/v1/account/orders?";
-	vector<std::pair<string, string>> path = {
-		{"currencyPair", pair},
-		{"page", to_string(page)},
-		{"limit", to_string(limit)},
-		{"recvWindow", to_string(recv_window)}
-	};
-	path.push_back(make_pair("signature", Marketplace::signature("GET", "/api/v1/account/orders", path)));
-	url = Marketplace::build_query(path, url);
-	return Marketplace::curl_api("GET", url, vector<std::pair<string, string>>());
+    return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
 }
 
-Json::Value Marketplace::get_filled_orders(string pair, int page, int limit, int start_time, int end_time, int recv_window)
+std::string Marketplace::signature(std::string method, std::string url, std::vector<std::pair<std::string, std::string>> &parameters)
 {
-	string result;
-	string url = "/api/v1/account/orders/history?";
-	vector<std::pair<string, string>> path = {
-		{"currencyPair", pair},
-		{"page", to_string(page)},
-		{"limit", to_string(limit)},
-		{"recvWindow", to_string(recv_window)}
-	};
-	if (start_time > 0) {
-		path.push_back(make_pair("start_time", to_string(start_time)));
-	}
-	if (end_time > 0) {
-		path.push_back(make_pair("end_time", to_string(end_time)));
-	};
-	path.push_back(make_pair("signature", Marketplace::signature("GET", "/api/v1/account/orders/history", path)));
-	url = Marketplace::build_query(path, url);
-	return Marketplace::curl_api( "GET", url, vector<std::pair<string, string>>());
+    parameters.push_back(make_pair("timestamp", std::to_string(this->timestamp().count())));
+
+    std::string signature = method + "|" + url + "|" + this->build_query(parameters, "");
+
+    unsigned int md_len;
+    unsigned char *str = HMAC(EVP_sha256(),
+        this->secret_key.c_str(),
+        strlen(this->secret_key.c_str()),
+        reinterpret_cast<const unsigned char *>(signature.c_str()),
+        signature.size(),
+        nullptr,
+        &md_len
+    );
+
+    return base64::to_base64(reinterpret_cast<char *>(str));
 }
 
-Json::Value Marketplace::get_trades(string pair, int page, int limit, int start_time, int end_time, int recv_window)
+std::string Marketplace::build_query(std::vector<std::pair<std::string, std::string>> parameters, std::string url)
 {
-	string result;
-	string url = "/api/v1/account/orders?";
-	vector<std::pair<string, string>> path = {
-		{"currencyPair", pair},
-		{"page", to_string(page)},
-		{"limit", to_string(limit)},
-		{"recvWindow", to_string(recv_window)}
-	};
-	if (start_time > 0) {
-		path.push_back(make_pair("start_time", to_string(start_time)));
-	}
-	if (end_time > 0) {
-		path.push_back(make_pair("end_time", to_string(end_time)));
-	}
-	path.push_back(make_pair("signature", Marketplace::signature("GET", "/api/v1/account/orders", path)));
-	url = Marketplace::build_query(path, url);
-	return Marketplace::curl_api("GET", url, vector<std::pair<string, string>>());
+    for (auto it = parameters.begin(); it != parameters.end(); ++it) {
+        url += it->first + "=" + it->second;
+        if (next(it) != parameters.end()) {
+            url += "&";
+        }
+    }
+
+    return url;
 }
 
-Json::Value Marketplace::place_order(string pair, string price, string volume, int side, int order_type, int time_inforce, int recv_window)
+size_t Marketplace::curl_call_back(void *contents, size_t size, size_t nmemb, std::string *buffer)
 {
-	string result;
-	string url = "/api/v1/account/orders/place";
-	vector<std::pair<string, string>> parameters = {
-		{"currencyPair", pair},
-		{"unitPrice", price},
-		{"volume", volume},
-		{"orderSideId", to_string(side)},
-		{"orderTypeId", to_string(order_type)},
-		{"timeInForce", to_string(time_inforce)},
-		{"recvWindow", to_string(recv_window)}
-	};
-	parameters.push_back(make_pair("signature", Marketplace::signature("POST", url, parameters)));
-	return Marketplace::curl_api("POST", url, parameters);
+    buffer->append((char *)contents, size * nmemb);
+
+    return size * nmemb;
 }
 
-Json::Value Marketplace::place_test_order(string pair, string price, string volume, int side, int order_type, int time_inforce, int recv_window)
+Json::Value Marketplace::curl_api(std::string method, std::string path, std::vector<std::pair<std::string, std::string>> parameters)
 {
-	string result;
-	string url = "/api/v1/account/orders/test";
-	vector<std::pair<string, string>> parameters = {
-		{"currencyPair", pair},
-		{"unitPrice", price},
-		{"volume", volume},
-		{"orderSideId", to_string(side)},
-		{"orderTypeId", to_string(order_type)},
-		{"timeInForce", to_string(time_inforce)},
-		{"recvWindow", to_string(recv_window)}
-	};
-	parameters.push_back(make_pair("signature", Marketplace::signature("POST", url, parameters)));
-	return Marketplace::curl_api("POST", url, parameters);
+    Json::CharReaderBuilder builder;
+    Json::CharReader *reader = builder.newCharReader();
+    Json::Value json_result;
+
+    std::string result;
+    std::string error;
+
+    std::string url = MARKETPLACE_HOST + path;
+
+    CURLcode res;
+    struct curl_slist *headers = NULL;
+
+    headers = curl_slist_append(headers, ("api-key: " + this->api_key).c_str());
+    headers = curl_slist_append(headers, ("User-Agent: Ur mom gay"));
+    headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded");
+
+    std::string stringed_parameters = this->build_query(parameters, "");
+
+    if (this->curl) {
+        curl_easy_setopt(this->curl, CURLOPT_URL, url.c_str());
+        curl_easy_setopt(this->curl, CURLOPT_CUSTOMREQUEST, method.c_str());
+        curl_easy_setopt(this->curl, CURLOPT_HTTPHEADER, headers);
+        curl_easy_setopt(this->curl, CURLOPT_WRITEDATA, &result);
+        curl_easy_setopt(this->curl, CURLOPT_SSL_VERIFYHOST, false);
+        curl_easy_setopt(this->curl, CURLOPT_SSL_VERIFYPEER, false);
+
+        if (method != "GET") {
+            curl_easy_setopt(this->curl, CURLOPT_POSTFIELDS, stringed_parameters.c_str());
+            curl_easy_setopt(this->curl, CURLOPT_POSTFIELDSIZE, stringed_parameters.length());
+        }
+
+        curl_easy_setopt(this->curl, CURLOPT_WRITEFUNCTION, this->curl_call_back);
+        res = curl_easy_perform(this->curl);
+    }
+
+    reader->parse(result.c_str(), result.c_str() + result.length(), &json_result, &error);
+
+    return json_result;
 }
 
-Json::Value Marketplace::cancel_order(string pair, string order_id, int recv_window)
+Marketplace::~Marketplace()
 {
-	string result;
-	string url = "/api/v1/account/orders/cancel";
-	vector<std::pair<string, string>> parameters = {
-		{"currencyPair", pair},
-		{"orderId", order_id},
-		{"recvWindow", to_string(recv_window)}
-	};
-	parameters.push_back(make_pair("signature", Marketplace::signature("DELETE", url, parameters)));
-	return Marketplace::curl_api("DELETE", url, parameters);
-}
-
-size_t Marketplace::curl_call_back(void *contents, size_t size, size_t nmemb, string *buffer)
-{
-	buffer->append((char*)contents, size * nmemb);
-	return size * nmemb;
-}
-
-string Marketplace::signature(string method, string url, vector<std::pair<string, string>> &parameters)
-{
-	parameters.push_back(make_pair("timestamp", to_string(Marketplace::timestamp().count())));
-	string signature = method + "|" + url + "|" + Marketplace::build_query(parameters, "");
-	unsigned int md_len;
-	unsigned char *str = HMAC(EVP_sha256(),
-		Marketplace::secret_key.c_str(),
-		strlen(Marketplace::secret_key.c_str()),
-		reinterpret_cast<const unsigned char*>(signature.c_str()),
-		signature.size(),
-		nullptr,
-		&md_len
-	);
-	return base64::to_base64(reinterpret_cast<char*>(str));
-}
-
-chrono::milliseconds Marketplace::timestamp()
-{
-	return chrono::duration_cast<chrono::milliseconds>(
-		chrono::system_clock::now().time_since_epoch()
-	);
-}
-
-string Marketplace::build_query(vector<std::pair<string, string>> parameters, string url)
-{
-	for (auto it = parameters.begin(); it != parameters.end(); ++it) {
-		url += it->first + "=" + it->second;
-		if (next(it) != parameters.end()) {
-			url += "&";
-		}
-	}
-	return url;
-}
-
-Json::Value Marketplace::curl_api(string method, string path, vector<std::pair<string, string>> parameters)
-{
-	Json::Reader reader;
-	Json::Value json_result;
-	string result;
-	string url(MARKETPLACE_HOST);
-	url += path;
-	CURLcode res;
-	struct curl_slist *headers = NULL;
-
-	headers = curl_slist_append(headers, ("api-key: " + Marketplace::api_key).c_str());
-	headers = curl_slist_append(headers, ("User-Agent: Ur mom gay"));
-	headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded");
-
-	string stringed_parameters = Marketplace::build_query(parameters, "");
-
-	if (Marketplace::curl) {
-		curl_easy_setopt(Marketplace::curl, CURLOPT_URL, url.c_str());
-		curl_easy_setopt(Marketplace::curl, CURLOPT_CUSTOMREQUEST, method.c_str());
-		curl_easy_setopt(Marketplace::curl, CURLOPT_HTTPHEADER, headers);
-		curl_easy_setopt(Marketplace::curl, CURLOPT_WRITEDATA, &result);
-		curl_easy_setopt(Marketplace::curl, CURLOPT_SSL_VERIFYHOST, false);
-		curl_easy_setopt(Marketplace::curl, CURLOPT_SSL_VERIFYPEER, false);
-
-		if (method != "GET") {
-			curl_easy_setopt(Marketplace::curl, CURLOPT_POSTFIELDS, stringed_parameters.c_str());
-			curl_easy_setopt(Marketplace::curl, CURLOPT_POSTFIELDSIZE, stringed_parameters.length());
-		}
-
-		curl_easy_setopt(Marketplace::curl, CURLOPT_WRITEFUNCTION, Marketplace::curl_call_back);
-		res = curl_easy_perform(Marketplace::curl);
-	}
-	reader.parse(result, json_result);
-	return json_result;
+    curl_easy_cleanup(this->curl);
+    curl_global_cleanup();
 }
